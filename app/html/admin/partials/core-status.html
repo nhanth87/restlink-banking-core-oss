@@ -1,0 +1,15 @@
+<dl class="status">
+  <dt>moneyReady</dt><dd data-live="{{MONEY_READY}}">{{MONEY_READY}}</dd>
+  <dt>temporalLive</dt><dd>{{TEMPORAL_LIVE}}</dd>
+  <dt>workerPolling</dt><dd>{{WORKER_POLLING}}</dd>
+  <dt>coreLive</dt><dd>{{CORE_LIVE}}</dd>
+  <dt>paymentSagas</dt><dd>{{SAGA_COUNTS}}</dd>
+  <dt>profiles</dt><dd>{{PROFILES}}</dd>
+</dl>
+<style>
+  dl.status { display: grid; grid-template-columns: 10rem 1fr; gap: .35rem 1rem; margin: 0; }
+  dl.status dt { color: #4B5563; }
+  dl.status dd { margin: 0; font-variant-numeric: tabular-nums; }
+  dl.status dd[data-live="true"] { color: #198A00; font-weight: 600; }
+  dl.status dd[data-live="false"] { color: #DE2010; font-weight: 600; }
+</style>

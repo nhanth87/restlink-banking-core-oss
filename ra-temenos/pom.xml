@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>et.restlink</groupId>
+    <artifactId>restlink-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>ra-temenos</artifactId>
+  <packaging>jar</packaging>
+  <name>Restlink-core :: ra-temenos (Phase 2)</name>
+  <description>JAIN SLEE RA adaptor → Temenos T24/Transact via OFS (3-port). Licensed/proprietary —
+    integration only, own runtime (D4 escape hatch). No Temenos binaries in this repo.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>et.restlink</groupId>
+      <artifactId>restlink-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.microjainslee</groupId>
+      <artifactId>jainslee-api</artifactId>
+      <version>${microjainslee.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

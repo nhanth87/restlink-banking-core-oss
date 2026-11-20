@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>et.restlink</groupId>
+    <artifactId>restlink-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>restlink-app</artifactId>
+  <packaging>jar</packaging>
+  <name>Restlink-core :: restlink-app (Quarkus + micro-jainslee)</name>
+  <description>Phase 1 financial services (wallet, payments, SCF, credit, cross-border). Native
+    WALLET_LEDGER provider; ra-fineract / ra-temenos plug in for Phase 2. Java 25 only.</description>
+
+  <properties>
+    <finalName>restlink-app</finalName>
+    <infinispan.version>15.0.0.Final</infinispan.version>
+    <jgroups.version>5.3.13.Final</jgroups.version>
+    <protostream.version>5.0.1.Final</protostream.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.quarkus.platform</groupId>
+        <artifactId>quarkus-bom</artifactId>
+        <version>${quarkus.platform.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- micro-jainslee ClusterManager compiles against Infinispan 15; Quarkus BOM would pull 16 +
+           protostream 6.x and break the cache manager. Pin Infinispan 15 for N-N HA. -->
+      <dependency><groupId>org.infinispan</groupId><artifactId>infinispan-core</artifactId><version>${infinispan.version}</version></dependency>
+      <dependency><groupId>org.infinispan</groupId><artifactId>infinispan-commons</artifactId><version>${infinispan.version}</version></dependency>
+      <dependency><groupId>org.jgroups</groupId><artifactId>jgroups</artifactId><version>${jgroups.version}</version></dependency>
+      <dependency><groupId>org.infinispan.protostream</groupId><artifactId>protostream</artifactId><version>${protostream.version}</version></dependency>
+      <dependency><groupId>org.infinispan.protostream</groupId><artifactId>protostream-types</artifactId><version>${protostream.version}</version></dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- jainslee-core FIRST so its ProfileAccessorInvoker shadows the api stub (split-package). -->
+    <dependency><groupId>com.microjainslee</groupId><artifactId>jainslee-core</artifactId><version>${microjainslee.version}</version></dependency>
+
+    <!-- restlink modules -->
+    <dependency><groupId>et.restlink</groupId><artifactId>restlink-api</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>et.restlink</groupId><artifactId>restlink-workflow</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>et.restlink</groupId><artifactId>ra-fineract</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>et.restlink</groupId><artifactId>ra-temenos</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>io.temporal</groupId><artifactId>temporal-sdk</artifactId><version>${temporal.sdk.version}</version></dependency>
+    <dependency><groupId>io.temporal</groupId><artifactId>temporal-testing</artifactId><version>${temporal.sdk.version}</version><scope>test</scope></dependency>
+
+    <!-- micro-jainslee runtime (core already declared first, above) -->
+    <dependency><groupId>com.microjainslee</groupId><artifactId>jainslee-api</artifactId><version>${microjainslee.version}</version></dependency>
+    <dependency><groupId>com.microjainslee</groupId><artifactId>adapter-quarkus</artifactId><version>${microjainslee.version}</version></dependency>
+    <dependency><groupId>com.microjainslee</groupId><artifactId>jainslee-apt</artifactId><version>${microjainslee.version}</version><optional>true</optional></dependency>
+    <!-- N-N HA: one JGroups view + DIST_SYNC caches (exactly-once, correlation, failover) -->
+    <dependency><groupId>com.microjainslee</groupId><artifactId>jainslee-cluster</artifactId><version>${microjainslee.version}</version></dependency>
+    <dependency><groupId>org.infinispan</groupId><artifactId>infinispan-core</artifactId></dependency>
+    <dependency><groupId>org.infinispan</groupId><artifactId>infinispan-commons</artifactId></dependency>
+    <dependency><groupId>org.infinispan.protostream</groupId><artifactId>protostream</artifactId></dependency>
+    <dependency><groupId>org.infinispan.protostream</groupId><artifactId>protostream-types</artifactId></dependency>
+
+    <!-- Quarkus -->
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-rest</artifactId></dependency>
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-rest-jackson</artifactId></dependency>
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-arc</artifactId></dependency>
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-jdbc-postgresql</artifactId></dependency>
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-hibernate-orm-panache</artifactId></dependency>
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-flyway</artifactId></dependency>
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-scheduler</artifactId></dependency>
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-elytron-security-common</artifactId></dependency>
+
+    <!-- integration hub (D5) -->
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-messaging</artifactId></dependency>
+
+    <dependency><groupId>org.apache.logging.log4j</groupId><artifactId>log4j-api</artifactId><version>${log4j.version}</version></dependency>
+    <dependency><groupId>org.apache.logging.log4j</groupId><artifactId>log4j-core</artifactId><version>${log4j.version}</version></dependency>
+
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-junit5</artifactId><scope>test</scope></dependency>
+    <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>${junit.version}</version><scope>test</scope></dependency>
+  </dependencies>
+
+  <build>
+    <finalName>${finalName}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>io.quarkus.platform</groupId>
+        <artifactId>quarkus-maven-plugin</artifactId>
+        <version>${quarkus.platform.version}</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build</goal>
+              <goal>generate-code</goal>
+              <goal>generate-code-tests</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

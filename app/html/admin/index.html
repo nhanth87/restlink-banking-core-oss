@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Restlink · ops</title>
+  <style>
+    :root { --ink:#14202B; --paper:#FBF8F2; --copper:#B87333; --live:#198A00; --down:#DE2010; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.45 "IBM Plex Sans", "Segoe UI", sans-serif; background: var(--paper); color: var(--ink); }
+    header { background: var(--ink); color: var(--paper); padding: 1.1rem 1.5rem; display: flex; justify-content: space-between; align-items: baseline; }
+    header strong { color: var(--copper); letter-spacing: .08em; font-size: .75rem; }
+    main { padding: 1.5rem; max-width: 52rem; }
+    h1 { font-size: 1.35rem; margin: 0 0 .4rem; }
+    .hint { color: #4B5563; margin-bottom: 1.2rem; }
+    #core-status { background: #fff; border: 1px solid #e4ddd2; border-radius: 8px; padding: 1rem 1.2rem; }
+  </style>
+  <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+</head>
+<body>
+  <header>
+    <div>Restlink Banking Core</div>
+    <strong>OPS</strong>
+  </header>
+  <main>
+    <h1>Node {{NODE}} · {{ISPN_MODE}}</h1>
+    <p class="hint">Peer truth only. moneyReady = Temporal frontend + worker polling. coreLive = RA probe, not “RA started”.</p>
+    <div id="core-status"
+         hx-get="/admin/partial/core-status?key={{TOKEN}}"
+         hx-trigger="load, every 5s"
+         hx-swap="innerHTML">
+      {{CORE_STATUS}}
+    </div>
+  </main>
+</body>
+</html>
